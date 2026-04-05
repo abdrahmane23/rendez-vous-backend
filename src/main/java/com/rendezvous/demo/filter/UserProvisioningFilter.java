@@ -37,6 +37,13 @@ public class UserProvisioningFilter extends OncePerRequestFilter {
                 newUser.setId(keyclockId);
                 newUser.setEmail(jwt.getClaimAsString("email"));
                 newUser.setName(jwt.getClaimAsString("preferred_username"));
+                newUser.setFirstName(jwt.getClaimAsString("firstName"));
+                newUser.setAddress(jwt.getClaimAsString("Adresse"));
+                newUser.setNumber(jwt.getClaimAsString("PhoneNumber"));
+                String field = jwt.getClaimAsString("field");
+                if (field != null) {
+                    newUser.setField(field);
+                }
                 userRepo.save(newUser);
             }
         }

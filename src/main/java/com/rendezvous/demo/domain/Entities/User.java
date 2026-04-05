@@ -41,6 +41,8 @@ public class User {
 
     @Column(name = "number", nullable = false)
     private String Number;
+    @Column(name= "field")
+    private String field;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)

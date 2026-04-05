@@ -1,4 +1,4 @@
-package com.example.ticketPlatform.configuration;
+package com.rendezvous.demo.Configuration;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
