@@ -23,15 +23,17 @@ public class KeycloakAdminServiceImpl implements KeycloakAdminService {
     @Override
     public void createUser(CreateExaminerRequestDto createExaminerRequestDto) {
         String password = createExaminerRequestDto.getName()+"123" ;
+        System.out.println(password);
         UserRepresentation user = new UserRepresentation();
         user.setUsername(createExaminerRequestDto.getName());
+        user.setLastName(createExaminerRequestDto.getName());
         user.setFirstName(createExaminerRequestDto.getFirstName());
         user.setEmail(createExaminerRequestDto.getEmail());
         user.singleAttribute("PhoneNumber",createExaminerRequestDto.getNumber());
         user.singleAttribute("Adresse",createExaminerRequestDto.getAddress());
         user.singleAttribute("field",createExaminerRequestDto.getField());
         user.setEnabled(true);
-        try (Response response = keycloak.realm("Rendez-vous realm").users().create(user)) {
+        try (Response response = keycloak.realm("Rendez-vous").users().create(user)) {
             if (response.getStatus() == 201) {
                 String userId = CreatedResponseUtil.getCreatedId(response);
                 System.out.println("User created with ID: " + userId);
@@ -39,7 +41,7 @@ public class KeycloakAdminServiceImpl implements KeycloakAdminService {
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(password);
                 credential.setTemporary(false);
-                keycloak.realm("Rendez-vous realm").users().get(userId).resetPassword(credential);
+                keycloak.realm("Rendez-vous").users().get(userId).resetPassword(credential);
 
             } else {
                 throw new UserNotCreatedException("Failed to create user: " + response.getStatusInfo());

@@ -24,7 +24,6 @@ import java.util.UUID;
 public class User {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name", nullable = false)
@@ -34,13 +33,13 @@ public class User {
     private String firstName;
 
     @Column(name = "adress", nullable = false)
-    private String Address;
+    private String address;
 
     @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "number", nullable = false)
-    private String Number;
+    private String number;
     @Column(name= "field")
     private String field;
 
@@ -63,11 +62,11 @@ public class User {
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
         User user = (User) object;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(firstName, user.firstName) && Objects.equals(Address, user.Address) && Objects.equals(email, user.email) && Objects.equals(Number, user.Number) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(firstName, user.firstName) && Objects.equals(address, user.address) && Objects.equals(email, user.email) && Objects.equals(number, user.number) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, firstName, Address, email, Number, createdAt, updatedAt);
+        return Objects.hash(id, name, firstName, address, email, number, createdAt, updatedAt);
     }
 }

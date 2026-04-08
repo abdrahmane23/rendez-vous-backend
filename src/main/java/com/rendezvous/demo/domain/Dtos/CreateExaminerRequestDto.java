@@ -15,14 +15,15 @@ public class CreateExaminerRequestDto {
     private String firstName;
 
     @NotBlank (message = "Address is required")
-    private String Address;
+    private String address;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Number is required")
     @Pattern(regexp = "^[0-9]+$", message = "Must contain only numbers")
-    private String Number;
+    private String number;
 
     @NotBlank
     private String field;

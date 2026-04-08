@@ -30,7 +30,7 @@ public class Section {
     private String name;
 
     @Column(name = "location", nullable = false)
-    private String Location;
+    private String location;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
@@ -50,11 +50,11 @@ public class Section {
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
         Section section = (Section) object;
-        return Objects.equals(id, section.id) && Objects.equals(name, section.name) && Objects.equals(Location, section.Location) && Objects.equals(createdAt, section.createdAt) && Objects.equals(updatedAt, section.updatedAt);
+        return Objects.equals(id, section.id) && Objects.equals(name, section.name) && Objects.equals(location, section.location) && Objects.equals(createdAt, section.createdAt) && Objects.equals(updatedAt, section.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, Location, createdAt, updatedAt);
+        return Objects.hash(id, name, location, createdAt, updatedAt);
     }
 }

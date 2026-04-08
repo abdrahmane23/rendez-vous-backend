@@ -11,10 +11,10 @@ public class KeycloakAdminConfig {
     public Keycloak  keycloakAdmin() {
         return KeycloakBuilder.builder()
                 .serverUrl("http://localhost:8080")
-                .realm("Rendez-vous realm")
+                .realm("Rendez-vous")
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .clientId("backend-cllient")
-                .clientSecret("truM8SZ2fTxwNzKnN7SUdNnEJdHUfXcV")
+                .clientSecret("dWd0Ik5JRpAtKvU4V4Jt3VpQZeswZwEf")
                 .build();
     }
 }

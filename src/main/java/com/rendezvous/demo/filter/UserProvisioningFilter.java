@@ -32,6 +32,7 @@ public class UserProvisioningFilter extends OncePerRequestFilter {
                 && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof Jwt jwt){
             UUID keyclockId = UUID.fromString(jwt.getSubject());
+            System.out.println("User ID from JWT: " +jwt.getClaimAsString("Adresse") );
             if (!userRepo.existsById(keyclockId)){
                 User newUser = new  User();
                 newUser.setId(keyclockId);

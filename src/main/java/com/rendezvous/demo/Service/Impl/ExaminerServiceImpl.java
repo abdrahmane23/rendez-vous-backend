@@ -5,22 +5,22 @@ import com.rendezvous.demo.Mapper.UserMapper;
 import com.rendezvous.demo.Repositories.UserRepo;
 import com.rendezvous.demo.Service.ExaminerService;
 import com.rendezvous.demo.Service.KeycloakAdminService;
+import com.rendezvous.demo.Specification.UserSpecifications;
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import com.rendezvous.demo.domain.Entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ExaminerServiceImpl  implements ExaminerService {
-    UserMapper userMapper;
-    KeycloakAdminService keycloakAdminService;
-    UserRepo userRepo;
+    private final KeycloakAdminService keycloakAdminService;
+    private final UserRepo userRepo;
     @Override
     public void addExaminer(CreateExaminerRequestDto createExaminerRequestDto) {
         keycloakAdminService.createUser( createExaminerRequestDto);
@@ -51,4 +51,13 @@ public class ExaminerServiceImpl  implements ExaminerService {
                 ()-> new UserNotFoundException("Examiner not found")
         );
     }
+
+    @Override
+    public Page<User> searchExaminers(String query,String field, Pageable pageable) {
+        Specification<User> spec = Specification.where(UserSpecifications.nameContains(query))
+                .or(UserSpecifications.FirstnameContains(query))
+                .and(UserSpecifications.fieldEquals(field));
+        return userRepo.findAll(spec, pageable);
+    }
+
 }
