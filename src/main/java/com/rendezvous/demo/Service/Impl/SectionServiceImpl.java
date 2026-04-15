@@ -40,6 +40,7 @@ public class SectionServiceImpl implements SectionService {
         Section newSection = new Section();
         newSection.setName(section.getName());
         newSection.setLocation(section.getLocation());
+        newSection.setCapacity(section.getCapacity());
         sectionRepo.save(newSection);
         if (section.getTest()!= null) {
             Test test = new Test();
@@ -48,7 +49,8 @@ public class SectionServiceImpl implements SectionService {
             test.setDuration(testDto.getDuration());
             test.setTimeOfResult(testDto.getTimeOfResult());
             test.setSection(newSection);
-            testRepo.save(test);
+            Test saved = testRepo.saveAndFlush(test);
+            System.out.println(saved.getId());
         }
     }
 
@@ -59,7 +61,7 @@ public class SectionServiceImpl implements SectionService {
 
         existingSection.setName(updatedSection.getName());
         existingSection.setLocation(updatedSection.getLocation());
-        sectionRepo.save(existingSection);
+        existingSection.setCapacity(updatedSection.getCapacity());
         if (updatedSection.getTest() != null) {
             if (existingSection.getTest()!=null){
                 Test existingTest = existingSection.getTest();
@@ -67,7 +69,6 @@ public class SectionServiceImpl implements SectionService {
                 existingTest.setName(testDto.getName());
                 existingTest.setDuration(testDto.getDuration());
                 existingTest.setTimeOfResult(testDto.getTimeOfResult());
-                testRepo.save(existingTest);
             }else {
                 Test test = new Test();
                 CreateTestRequestDto testDto = updatedSection.getTest();
@@ -79,9 +80,11 @@ public class SectionServiceImpl implements SectionService {
             }
             } else {
             Test existingTest = existingSection.getTest();
-            existingTest.setSection(null);
-            existingSection.setTest(null);
-            testRepo.delete(existingTest);
+            if (existingTest != null) {
+                existingTest.setSection(null);
+                existingSection.setTest(null);
+                testRepo.delete(existingTest);
+            }
         }
     }
     public void deleteSection(UUID id) {
