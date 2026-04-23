@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -66,11 +68,12 @@ public class ShiftServiceImpl implements ShiftService {
         }
 
         int overlappingShifts = shiftRepo.countBySectionIdAndStatusAndStartLessThanAndEndGreaterThan(
-                examinerId,
+                sectionId,
                 ShiftStatus.ACTIVE,
                 shiftRequestDto.getEndTime(),
                 shiftRequestDto.getStartTime()
         );
+        System.out.println(overlappingShifts);
 
         if (overlappingShifts == section.getCapacity()){
             throw new SectionFullException("Shift overlaps with existing shifts and section capacity is reached");
@@ -109,6 +112,14 @@ public class ShiftServiceImpl implements ShiftService {
         return shiftRepo.findBySectionIdAndStatus(sectionId, ShiftStatus.ACTIVE,pageable);
 
     }
+    @Override
+    public List<Shift> getAllShiftsForSection(UUID sectionId) {
+        if (!sectionRepo.existsById(sectionId)) {
+            throw new SectionNotFoundException("Section not found");
+        }
+        return shiftRepo.findBySectionIdAndStatus(sectionId, ShiftStatus.ACTIVE);
+
+    }
 
     @Override
     public Shift getShiftById(UUID shiftId) {
@@ -118,18 +129,48 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public Page<User> getAvailableExaminers(UUID sectionId, LocalDateTime startTime, LocalDateTime endTime, Pageable pageable) {
+    public List<User> getAvailableExaminers(UUID sectionId, LocalDateTime startTime, LocalDateTime endTime) {
         if (!sectionRepo.existsById(sectionId)) {
             throw new SectionNotFoundException("Section not found");
         }
-        Page<Shift> shifts = shiftRepo.findBySectionIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+        System.out.println(sectionId);
+        System.out.println(startTime);
+        System.out.println(endTime);
+        List<Shift> shifts = shiftRepo.findBySectionIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
                 sectionId,
                 ShiftStatus.ACTIVE,
                 startTime,
-                endTime,
-                pageable);
-        Page<User> availableExaminers = shifts.map(Shift::getExaminer);
+                endTime);
+        System.out.println(shifts.size());
+        List<User> availableExaminers = shifts.stream().map(Shift::getExaminer).toList();
         return availableExaminers;
+    }
+    public User getExaminerIfAvailable(UUID sectionId ,UUID examinerId, LocalDateTime startTime, LocalDateTime endTime) {
+        if (!sectionRepo.existsById(sectionId)) {
+            throw new SectionNotFoundException("Section not found");
+        }
+        Optional<Shift> shift = shiftRepo.findBySectionIdAndExaminerIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+                sectionId,
+                examinerId,
+                ShiftStatus.ACTIVE,
+                startTime,
+                endTime
+                );
+
+        if (shift.isPresent()){
+            return shift.get().getExaminer();
+        }else {
+            throw new ExaminerNotAvailableException("examiner doesnt have a shift at this time");
+        }
+    }
+
+    @Override
+    public List<Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus) {
+        return shiftRepo.findBySectionIdAndExaminerIdAndStatus(
+                sectionId,
+                examinerId,
+                shiftStatus
+        );
     }
 
     @Override

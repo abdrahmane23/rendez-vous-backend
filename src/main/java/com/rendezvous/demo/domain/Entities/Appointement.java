@@ -33,10 +33,7 @@ public class Appointement {
     @Enumerated(EnumType.STRING)
     private AppointementStatus status;
     @Column(name="start_time",nullable = false)
-    private LocalDateTime Start;
-    @Column(name="end_time",nullable = false)
-    private LocalDateTime End;
-
+    private LocalDateTime start;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
@@ -63,11 +60,11 @@ public class Appointement {
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
         Appointement that = (Appointement) object;
-        return Objects.equals(id, that.id) && status == that.status && Objects.equals(Start, that.Start) && Objects.equals(End, that.End) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+        return Objects.equals(id, that.id) && status == that.status && Objects.equals(start, that.start) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, Start, End, createdAt, updatedAt);
+        return Objects.hash(id, status, start, createdAt, updatedAt);
     }
 }

@@ -1,4 +1,4 @@
-package com.rendezvous.demo.Validators.Validator;
+package com.rendezvous.demo.Validators.DtoValidators;
 
 import com.rendezvous.demo.Exception.ShiftTimingException;
 import com.rendezvous.demo.Validators.Annotations.ValidDateRange;
@@ -16,7 +16,6 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, C
         if (createshiftRequestDto == null || createshiftRequestDto.getStartTime() == null || createshiftRequestDto.getEndTime() == null) {
             return true;
         }
-        boolean startTimeInTheFuture = createshiftRequestDto.getStartTime().isAfter(LocalDateTime.now());
         boolean startsAtExactHour= createshiftRequestDto.getStartTime().getMinute() == 0
                 && createshiftRequestDto.getStartTime().getSecond() == 0
                 && createshiftRequestDto.getStartTime().getNano() == 0;
@@ -28,8 +27,7 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, C
             throw new ShiftTimingException("Shift end time cannot be more than 1 months in the future");
         }
 
-        return  startTimeInTheFuture
-                && durationBetweenTwoAndEightHours
+        return durationBetweenTwoAndEightHours
                 && startsAtExactHour
                 && durationIsExactHours ;
     }

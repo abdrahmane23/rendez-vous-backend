@@ -2,6 +2,7 @@ package com.rendezvous.demo.Mapper;
 
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import com.rendezvous.demo.domain.Dtos.GetExaminerDetailsResponseDto;
+import com.rendezvous.demo.domain.Dtos.GetExaminerForAppointementResponseDto;
 import com.rendezvous.demo.domain.Dtos.GetExaminerResponseDto;
 import com.rendezvous.demo.domain.Entities.User;
 import org.mapstruct.Mapper;
@@ -13,4 +14,5 @@ public interface UserMapper {
     public GetExaminerResponseDto toDto(User user);
     public GetExaminerDetailsResponseDto toDetailsDto(User user);
 
+    GetExaminerForAppointementResponseDto toGetExaminerForAppointementResponseDto(User user);
 }

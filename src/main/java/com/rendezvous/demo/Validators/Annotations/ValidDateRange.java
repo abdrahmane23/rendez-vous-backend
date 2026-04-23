@@ -1,6 +1,6 @@
 package com.rendezvous.demo.Validators.Annotations;
 
-import com.rendezvous.demo.Validators.Validator.DateRangeValidator;
+import com.rendezvous.demo.Validators.DtoValidators.DateRangeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
