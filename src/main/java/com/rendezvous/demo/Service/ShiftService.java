@@ -1,4 +1,4 @@
-package com.rendezvous.demo.Service;
+package com.rendezvous.demo.service;
 
 import com.rendezvous.demo.domain.Dtos.CreateshiftRequestDto;
 import com.rendezvous.demo.domain.Entities.Shift;
@@ -28,5 +28,10 @@ public interface ShiftService {
     List <Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus);
     void cancelShift(UUID shiftId);
     void completeShift(UUID shiftId);
+
+    Page<Shift> getUpcomingShiftsForExaminer(UUID examinerId, Pageable pageable);
+    Shift getNextUpcomingShiftForExaminer(UUID examinerId);
+
+
 
 }

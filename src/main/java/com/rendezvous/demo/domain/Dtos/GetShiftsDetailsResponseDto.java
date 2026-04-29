@@ -1,8 +1,5 @@
 package com.rendezvous.demo.domain.Dtos;
 
-
-import com.rendezvous.demo.domain.Entities.Section;
-import com.rendezvous.demo.domain.Entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

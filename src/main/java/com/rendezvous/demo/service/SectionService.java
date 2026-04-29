@@ -1,4 +1,4 @@
-package com.rendezvous.demo.Service;
+package com.rendezvous.demo.service;
 
 import com.rendezvous.demo.domain.Dtos.CreateSectionRequestDto;
 import com.rendezvous.demo.domain.Entities.Section;

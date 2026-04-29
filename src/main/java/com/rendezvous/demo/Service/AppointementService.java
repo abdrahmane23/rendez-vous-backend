@@ -1,10 +1,13 @@
-package com.rendezvous.demo.Service;
+package com.rendezvous.demo.service;
 
+import com.rendezvous.demo.domain.Dtos.CreateConsultationRequestDto;
+import com.rendezvous.demo.domain.Dtos.CreateTestResultRequestDto;
 import com.rendezvous.demo.domain.Dtos.TimeSlotResponseDto;
 import com.rendezvous.demo.domain.Entities.Appointement;
 import com.rendezvous.demo.domain.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,4 +30,15 @@ public interface AppointementService {
     Page<Appointement> getUpcomingAppointementsForPatient(UUID patientId, Pageable pageable);
 
     void cancelAppointement(UUID patientId, UUID appointementId);
+
+    List<Appointement> getAppointementsForShift(UUID examinerId, UUID shiftId);
+
+    void markAppointementAsCompleted(UUID examinerId, UUID appointementId);
+
+    void markAppointementAsNonAttended(UUID examinerId, UUID appointementId);
+
+    void createTestResult(UUID examinerId, UUID appointementId, CreateTestResultRequestDto requestDto);
+
+    void createConsultation(UUID examinerId, UUID appointementId, CreateConsultationRequestDto requestDto);
+
 }

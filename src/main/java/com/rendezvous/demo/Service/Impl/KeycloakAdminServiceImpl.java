@@ -1,7 +1,7 @@
-package com.rendezvous.demo.Service.Impl;
+package com.rendezvous.demo.service.Impl;
 
 import com.rendezvous.demo.Exception.UserNotCreatedException;
-import com.rendezvous.demo.Service.KeycloakAdminService;
+import com.rendezvous.demo.service.KeycloakAdminService;
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
