@@ -1,9 +1,9 @@
-package com.rendezvous.demo.Service.Impl;
+package com.rendezvous.demo.service.Impl;
 
 import com.rendezvous.demo.Exception.SectionNotFoundException;
 import com.rendezvous.demo.Exception.TestNotFoundException;
 import com.rendezvous.demo.Repositories.TestRepo;
-import com.rendezvous.demo.Service.SectionService;
+import com.rendezvous.demo.service.SectionService;
 import com.rendezvous.demo.domain.Dtos.CreateSectionRequestDto;
 import com.rendezvous.demo.domain.Dtos.CreateTestRequestDto;
 import com.rendezvous.demo.domain.Entities.Test;

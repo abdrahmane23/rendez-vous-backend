@@ -1,12 +1,12 @@
-package com.rendezvous.demo.Service.Impl;
+package com.rendezvous.demo.service.Impl;
 
 
 import com.rendezvous.demo.Exception.*;
 import com.rendezvous.demo.Repositories.SectionRepo;
 import com.rendezvous.demo.Repositories.ShiftRepo;
 import com.rendezvous.demo.Repositories.UserRepo;
-import com.rendezvous.demo.Service.SectionService;
-import com.rendezvous.demo.Service.ShiftService;
+import com.rendezvous.demo.service.SectionService;
+import com.rendezvous.demo.service.ShiftService;
 import com.rendezvous.demo.domain.Dtos.CreateshiftRequestDto;
 import com.rendezvous.demo.domain.Entities.Section;
 import com.rendezvous.demo.domain.Entities.Shift;
@@ -198,6 +198,39 @@ public class ShiftServiceImpl implements ShiftService {
         }
         shift.setStatus(ShiftStatus.COMPLETED);
     }
+
+    @Override
+public Page<Shift> getUpcomingShiftsForExaminer(UUID examinerId, Pageable pageable) {
+    if (!userRepo.existsById(examinerId)) {
+        throw new UserNotFoundException("Examiner not found");
+    }
+
+    Pageable sortedPageable = org.springframework.data.domain.PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            org.springframework.data.domain.Sort.by("start").ascending()
+    );
+
+    return shiftRepo.findByExaminerIdAndStatusAndStartAfter(
+            examinerId,
+            ShiftStatus.ACTIVE,
+            LocalDateTime.now(),
+            sortedPageable
+    );
+}
+
+@Override
+public Shift getNextUpcomingShiftForExaminer(UUID examinerId) {
+    if (!userRepo.existsById(examinerId)) {
+        throw new UserNotFoundException("Examiner not found");
+    }
+
+    return shiftRepo.findFirstByExaminerIdAndStatusAndStartAfterOrderByStartAsc(
+            examinerId,
+            ShiftStatus.ACTIVE,
+            LocalDateTime.now()
+    ).orElseThrow(() -> new ShiftNotFoundException("No upcoming shift found"));
+}
 
 
 }

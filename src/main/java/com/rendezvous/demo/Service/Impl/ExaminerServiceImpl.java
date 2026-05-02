@@ -1,10 +1,10 @@
-package com.rendezvous.demo.Service.Impl;
+package com.rendezvous.demo.service.Impl;
 
 import com.rendezvous.demo.Exception.UserNotFoundException;
 import com.rendezvous.demo.Mapper.UserMapper;
 import com.rendezvous.demo.Repositories.UserRepo;
-import com.rendezvous.demo.Service.ExaminerService;
-import com.rendezvous.demo.Service.KeycloakAdminService;
+import com.rendezvous.demo.service.ExaminerService;
+import com.rendezvous.demo.service.KeycloakAdminService;
 import com.rendezvous.demo.Specification.UserSpecifications;
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import com.rendezvous.demo.domain.Entities.User;

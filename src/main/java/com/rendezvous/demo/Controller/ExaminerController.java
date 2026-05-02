@@ -2,7 +2,7 @@ package com.rendezvous.demo.Controller;
 
 
 import com.rendezvous.demo.Mapper.UserMapper;
-import com.rendezvous.demo.Service.ExaminerService;
+import com.rendezvous.demo.service.ExaminerService;
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import com.rendezvous.demo.domain.Dtos.GetExaminerDetailsResponseDto;
 import com.rendezvous.demo.domain.Dtos.GetExaminerResponseDto;

@@ -3,7 +3,7 @@ package com.rendezvous.demo.Controller;
 import java.util.UUID;
 
 import com.rendezvous.demo.Mapper.SectionMapper;
-import com.rendezvous.demo.Service.SectionService;
+import com.rendezvous.demo.service.SectionService;
 import com.rendezvous.demo.domain.Dtos.CreateSectionRequestDto;
 import com.rendezvous.demo.domain.Dtos.GetSectionDetailsResponseDto;
 import com.rendezvous.demo.domain.Dtos.GetSectionResponseDto;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import com.rendezvous.demo.domain.Entities.Section;
-import com.rendezvous.demo.Service.Impl.SectionServiceImpl;
+import com.rendezvous.demo.service.Impl.SectionServiceImpl;
 import java.util.List;
 
 @RestController

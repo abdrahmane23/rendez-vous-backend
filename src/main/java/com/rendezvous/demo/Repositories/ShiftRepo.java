@@ -8,7 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,4 +53,30 @@ public interface ShiftRepo extends JpaRepository<Shift, UUID> {
     List<Shift> findBySectionIdAndExaminerIdAndStatus(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus);
 
     int countBySectionIdAndStatusAndStartLessThanAndEndGreaterThan(UUID examinerId, ShiftStatus shiftStatus, @NotNull LocalDateTime endTime, @NotNull LocalDateTime startTime);
+
+    Page<Shift> findByExaminerIdAndStatusAndStartAfter(
+        UUID examinerId,
+        ShiftStatus status,
+        LocalDateTime now,
+        Pageable pageable
+);
+
+Optional<Shift> findFirstByExaminerIdAndStatusAndStartAfterOrderByStartAsc(
+        UUID examinerId,
+        ShiftStatus status,
+        LocalDateTime now
+);
+
+@Query("""
+        select s from Shift s
+        where s.examiner.id = :examinerId
+          and s.status in :statuses
+          and s.start <= :appointmentStart
+          and s.end >= :appointmentStart
+        """)
+Optional<Shift> findShiftForAppointmentValidation(
+        @Param("examinerId") UUID examinerId,
+        @Param("statuses") List<ShiftStatus> statuses,
+        @Param("appointmentStart") LocalDateTime appointmentStart
+);
 }
