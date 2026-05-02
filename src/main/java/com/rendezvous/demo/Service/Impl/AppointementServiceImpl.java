@@ -302,6 +302,7 @@ public class AppointementServiceImpl implements AppointementService {
     @Transactional
     public void createTestResult(UUID examinerId, UUID appointementId, CreateTestResultRequestDto requestDto) {
         Appointement appointement = getValidAppointementForResultOrConsultation(examinerId, appointementId);
+        appointement.setStatus(AppointementStatus.FINALIZED);
 
         TestResult testResult = new TestResult();
         testResult.setAppointement(appointement);
@@ -315,6 +316,7 @@ public class AppointementServiceImpl implements AppointementService {
     @Transactional
     public void createConsultation(UUID examinerId, UUID appointementId, CreateConsultationRequestDto requestDto) {
         Appointement appointement = getValidAppointementForResultOrConsultation(examinerId, appointementId);
+        appointement.setStatus(AppointementStatus.FINALIZED);
 
         Consultation consultation = new Consultation();
         consultation.setAppointement(appointement);
@@ -348,10 +350,9 @@ public class AppointementServiceImpl implements AppointementService {
     private Appointement getValidAppointementForResultOrConsultation(UUID examinerId, UUID appointementId) {
         Appointement appointement = getValidAppointementForExaminerAction(examinerId, appointementId);
 
-        if (appointement.getStatus() == AppointementStatus.CANCELED
-                || appointement.getStatus() == AppointementStatus.NON_ATTENDED) {
+        if (!appointement.getStatus().equals(AppointementStatus.COMPLETED)) {
             throw new RuntimeException(
-                    "Cannot create result or consultation for canceled or non attended appointement");
+                    "Cannot create result or consultation for a non completed appointement");
         }
 
         return appointement;
