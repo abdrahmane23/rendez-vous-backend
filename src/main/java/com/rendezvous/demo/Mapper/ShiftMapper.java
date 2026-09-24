@@ -12,10 +12,12 @@ import org.mapstruct.ReportingPolicy;
 
 public interface ShiftMapper {
     @Mapping(target = "sectionName", source = "shift.section.name")
+    @Mapping(target = "status", source = "status")
     GetShiftsForExaminerResponseDto toGetShiftsForExaminerResponseDto(Shift shift);
     @Mapping(target = "examinerName", source = "shift.examiner.name")
+    @Mapping(target = "status", source = "status")
     GetShiftsForSectionResponseDto toGetShiftsForSectionResponseDto(Shift shift);
-
+    @Mapping(target = "status", source = "status")
     GetShiftsDetailsResponseDto toGetShiftsDetailsResponseDto(Shift shift);
     GetExaminerForShiftResponseDto toGetExaminerForShiftResponseDto(User examiner);
     GetSectionForShiftResponseDto toGetSectionForShiftResponseDto(Section section);

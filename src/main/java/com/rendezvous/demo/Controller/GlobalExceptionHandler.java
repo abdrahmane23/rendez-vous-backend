@@ -74,4 +74,12 @@ public class GlobalExceptionHandler{
         errorDto.setError("Shift is already completed");
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleException(Exception ex) {
+        log.error("Caught exception", ex);
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setError("An unknown error occurred");
+        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

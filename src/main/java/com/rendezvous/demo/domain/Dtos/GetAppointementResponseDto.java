@@ -1,5 +1,6 @@
 package com.rendezvous.demo.domain.Dtos;
 
+import com.rendezvous.demo.domain.Enums.appointementTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,4 +14,6 @@ import java.util.UUID;
 public class GetAppointementResponseDto {
     private UUID id;
     private LocalDateTime start;
+    private UUID patientId;
+    private appointementTypeEnum type;
 }

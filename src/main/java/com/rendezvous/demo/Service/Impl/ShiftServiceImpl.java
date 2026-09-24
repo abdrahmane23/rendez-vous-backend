@@ -1,12 +1,11 @@
-package com.rendezvous.demo.service.Impl;
+package com.rendezvous.demo.Service.Impl;
 
 
 import com.rendezvous.demo.Exception.*;
 import com.rendezvous.demo.Repositories.SectionRepo;
 import com.rendezvous.demo.Repositories.ShiftRepo;
 import com.rendezvous.demo.Repositories.UserRepo;
-import com.rendezvous.demo.service.SectionService;
-import com.rendezvous.demo.service.ShiftService;
+import com.rendezvous.demo.Service.ShiftService;
 import com.rendezvous.demo.domain.Dtos.CreateshiftRequestDto;
 import com.rendezvous.demo.domain.Entities.Section;
 import com.rendezvous.demo.domain.Entities.Shift;
@@ -101,7 +100,7 @@ public class ShiftServiceImpl implements ShiftService {
             if (!userRepo.existsById(examinerId)) {
                 throw new UserNotFoundException("Examiner not found");
             }
-                return shiftRepo.findByExaminerIdAndStatus(examinerId, ShiftStatus.ACTIVE,pageable);
+                return shiftRepo.findByExaminerId(examinerId,pageable);
     }
 
     @Override
@@ -109,7 +108,7 @@ public class ShiftServiceImpl implements ShiftService {
         if (!sectionRepo.existsById(sectionId)) {
             throw new SectionNotFoundException("Section not found");
         }
-        return shiftRepo.findBySectionIdAndStatus(sectionId, ShiftStatus.ACTIVE,pageable);
+        return shiftRepo.findBySectionId(sectionId,pageable);
 
     }
     @Override
@@ -117,7 +116,7 @@ public class ShiftServiceImpl implements ShiftService {
         if (!sectionRepo.existsById(sectionId)) {
             throw new SectionNotFoundException("Section not found");
         }
-        return shiftRepo.findBySectionIdAndStatus(sectionId, ShiftStatus.ACTIVE);
+        return shiftRepo.findBySectionIdAndStatusIn(sectionId, List.of(ShiftStatus.ACTIVE,ShiftStatus.COMPLETED));
 
     }
 
@@ -129,30 +128,30 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public List<User> getAvailableExaminers(UUID sectionId, LocalDateTime startTime, LocalDateTime endTime) {
+    @Transactional
+    public List<User> getAvailableExaminers(UUID sectionId, LocalDateTime startTime,LocalDateTime endTime) {
         if (!sectionRepo.existsById(sectionId)) {
             throw new SectionNotFoundException("Section not found");
         }
         System.out.println(sectionId);
         System.out.println(startTime);
         System.out.println(endTime);
-        List<Shift> shifts = shiftRepo.findBySectionIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+        List<Shift> shifts = shiftRepo.findBySectionIdAndStatusInAndStartLessThanEqualAndEndGreaterThanEqual(
                 sectionId,
-                ShiftStatus.ACTIVE,
+                List.of(ShiftStatus.ACTIVE,ShiftStatus.COMPLETED),
                 startTime,
                 endTime);
         System.out.println(shifts.size());
-        List<User> availableExaminers = shifts.stream().map(Shift::getExaminer).toList();
-        return availableExaminers;
+        return shifts.stream().map(Shift::getExaminer).toList();
     }
     public User getExaminerIfAvailable(UUID sectionId ,UUID examinerId, LocalDateTime startTime, LocalDateTime endTime) {
         if (!sectionRepo.existsById(sectionId)) {
             throw new SectionNotFoundException("Section not found");
         }
-        Optional<Shift> shift = shiftRepo.findBySectionIdAndExaminerIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+        Optional<Shift> shift = shiftRepo.findBySectionIdAndExaminerIdAndStatusInAndStartLessThanEqualAndEndGreaterThanEqual(
                 sectionId,
                 examinerId,
-                ShiftStatus.ACTIVE,
+                List.of(ShiftStatus.ACTIVE,ShiftStatus.COMPLETED),
                 startTime,
                 endTime
                 );
@@ -165,15 +164,16 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public List<Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus) {
-        return shiftRepo.findBySectionIdAndExaminerIdAndStatus(
+    public List<Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus,ShiftStatus shiftStatus1) {
+        return shiftRepo.findBySectionIdAndExaminerIdAndStatusIn(
                 sectionId,
                 examinerId,
-                shiftStatus
+                List.of(shiftStatus,shiftStatus1)
         );
     }
 
     @Override
+    @Transactional
     public void cancelShift(UUID shiftId) {
         Shift shift = shiftRepo.findById(shiftId).orElseThrow(
                 () -> new ShiftNotFoundException("Shift not found"));
@@ -187,6 +187,7 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
+    @Transactional
     public void completeShift(UUID shiftId) {
         Shift shift = shiftRepo.findById(shiftId).orElseThrow(
                 () -> new ShiftNotFoundException("Shift not found"));
@@ -211,9 +212,9 @@ public Page<Shift> getUpcomingShiftsForExaminer(UUID examinerId, Pageable pageab
             org.springframework.data.domain.Sort.by("start").ascending()
     );
 
-    return shiftRepo.findByExaminerIdAndStatusAndStartAfter(
+    return shiftRepo.findByExaminerIdAndStatusInAndEndAfter(
             examinerId,
-            ShiftStatus.ACTIVE,
+            List.of(ShiftStatus.ACTIVE, ShiftStatus.COMPLETED),
             LocalDateTime.now(),
             sortedPageable
     );
@@ -231,6 +232,20 @@ public Shift getNextUpcomingShiftForExaminer(UUID examinerId) {
             LocalDateTime.now()
     ).orElseThrow(() -> new ShiftNotFoundException("No upcoming shift found"));
 }
+
+    @Override
+    public void markShift(UUID shiftId) {
+        Shift shift = shiftRepo.findById(shiftId).orElseThrow(
+                () -> new ShiftNotFoundException("Shift not found"));
+        if (shift.getStatus()== ShiftStatus.CANCELED){
+            throw new ShiftAlreadyCanceledException("Shift is already canceled");
+        }
+        if (shift.getStatus()== ShiftStatus.NON_ATTENDED){
+            throw new ShiftAlreadyCompletedException("Shift is already completed");
+        }
+        shift.setStatus(ShiftStatus.NON_ATTENDED);
+
+    }
 
 
 }

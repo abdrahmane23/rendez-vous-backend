@@ -15,6 +15,7 @@ public class GetSectionDetailsResponseDto {
     private UUID id;
     private String name;
     private String Location;
+    private int capacity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private GetTestResponseDto test;

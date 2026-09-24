@@ -1,10 +1,11 @@
-package com.rendezvous.demo.service;
+package com.rendezvous.demo.Service;
 
 import com.rendezvous.demo.domain.Dtos.CreateExaminerRequestDto;
 import com.rendezvous.demo.domain.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ExaminerService {
@@ -15,4 +16,7 @@ public interface ExaminerService {
     User getExaminerById(UUID id);
 
     Page<User> searchExaminers(String query,String field , Pageable pageable);
+
+    List<User> getExaminersBySectionId(UUID sectionId);
+    void addAdmin(CreateExaminerRequestDto createExaminerRequestDto);
 }

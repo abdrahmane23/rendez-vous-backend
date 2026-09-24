@@ -5,15 +5,18 @@ import com.rendezvous.demo.Exception.UserNotFoundException;
 import com.rendezvous.demo.Repositories.TestResultRepo;
 import com.rendezvous.demo.Repositories.UserRepo;
 import com.rendezvous.demo.Service.TestResultService;
+import com.rendezvous.demo.domain.Dtos.TestResultResponseDto;
 import com.rendezvous.demo.domain.Entities.Appointement;
 import com.rendezvous.demo.domain.Entities.TestResult;
 import com.rendezvous.demo.domain.Entities.User;
 import com.rendezvous.demo.domain.Enums.AppointementStatus;
 import com.rendezvous.demo.domain.Enums.TestResultStatus;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,5 +46,22 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setStatus(TestResultStatus.CANCELED);
 
 
+    }
+
+    @Override
+    public List<TestResult> getTestResultsForPatient(UUID patientId) {
+        return testResultRepo.findByAppointementPatientId(patientId);
+    }
+
+    @Override
+    public TestResult getTestResultById(UUID testResultId) {
+        return testResultRepo.findById(testResultId).orElseThrow(
+                ()-> new RuntimeException("test result not found")
+        );
+    }
+
+    @Override
+    public List<TestResult> getTestResultsForExaminer(UUID patientId) {
+        return testResultRepo.findByAppointementPatientId(patientId);
     }
 }

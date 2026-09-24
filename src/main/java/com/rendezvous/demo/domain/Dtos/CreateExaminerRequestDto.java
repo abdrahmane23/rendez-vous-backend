@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateExaminerRequestDto {
+
+    @NotBlank(message = "userName is required")
+    private String userName;
     @NotBlank(message = "Name is required")
     private String name;
 

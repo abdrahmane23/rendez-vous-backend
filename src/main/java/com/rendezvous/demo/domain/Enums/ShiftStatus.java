@@ -1,5 +1,5 @@
 package com.rendezvous.demo.domain.Enums;
 
 public enum ShiftStatus {
-    ACTIVE,CANCELED,COMPLETED
+    ACTIVE,NON_ATTENDED,CANCELED,COMPLETED
 }

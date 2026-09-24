@@ -1,6 +1,7 @@
 package com.rendezvous.demo.domain.Entities;
 
 import com.rendezvous.demo.domain.Enums.AppointementStatus;
+import com.rendezvous.demo.domain.Enums.appointementTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,8 @@ public class Appointement {
     private AppointementStatus status;
     @Column(name="start_time",nullable = false)
     private LocalDateTime start;
+    @Column(name="type")
+    private appointementTypeEnum type;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;

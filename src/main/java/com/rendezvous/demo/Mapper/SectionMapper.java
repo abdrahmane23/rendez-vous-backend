@@ -15,8 +15,11 @@ import org.mapstruct.ReportingPolicy;
 public interface SectionMapper {
 
     @Mapping(target = "testName", source = "test.name")
+    @Mapping(target = "duration", source = "test.duration")
+    @Mapping(target = "capacity", source = "capacity")
     GetSectionResponseDto toDto(Section section );
 
+    @Mapping(target = "capacity", source = "capacity")
     GetSectionDetailsResponseDto toGetSectionDetailsResponseDto(Section section);
     GetTestResponseDto toGetTestResponseDto(Test test);
 }

@@ -1,4 +1,4 @@
-package com.rendezvous.demo.service;
+package com.rendezvous.demo.Service;
 
 import com.rendezvous.demo.domain.Dtos.CreateConsultationRequestDto;
 import com.rendezvous.demo.domain.Dtos.CreateTestResultRequestDto;

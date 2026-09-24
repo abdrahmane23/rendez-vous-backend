@@ -1,4 +1,4 @@
-package com.rendezvous.demo.service.Impl;
+package com.rendezvous.demo.Service.Impl;
 
 import com.rendezvous.demo.Exception.*;
 import com.rendezvous.demo.Repositories.AppointementRepo;
@@ -7,16 +7,15 @@ import com.rendezvous.demo.Repositories.SectionRepo;
 import com.rendezvous.demo.Repositories.ShiftRepo;
 import com.rendezvous.demo.Repositories.TestResultRepo;
 import com.rendezvous.demo.Repositories.UserRepo;
-import com.rendezvous.demo.service.AppointementService;
-import com.rendezvous.demo.service.ShiftService;
+import com.rendezvous.demo.Service.AppointementService;
+import com.rendezvous.demo.Service.ShiftService;
 import com.rendezvous.demo.Validators.TimeValidator;
 import com.rendezvous.demo.domain.Dtos.TimeSlotResponseDto;
 import com.rendezvous.demo.domain.Entities.Appointement;
 import com.rendezvous.demo.domain.Entities.Section;
 import com.rendezvous.demo.domain.Entities.Shift;
 import com.rendezvous.demo.domain.Entities.User;
-import com.rendezvous.demo.domain.Enums.AppointementStatus;
-import com.rendezvous.demo.domain.Enums.ShiftStatus;
+import com.rendezvous.demo.domain.Enums.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +27,6 @@ import com.rendezvous.demo.domain.Dtos.CreateConsultationRequestDto;
 import com.rendezvous.demo.domain.Dtos.CreateTestResultRequestDto;
 import com.rendezvous.demo.domain.Entities.Consultation;
 import com.rendezvous.demo.domain.Entities.TestResult;
-import com.rendezvous.demo.domain.Enums.ConsultationStatus;
-import com.rendezvous.demo.domain.Enums.TestResultStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -61,7 +58,7 @@ public class AppointementServiceImpl implements AppointementService {
     public void createAppointement(UUID patientId, UUID sectionId, UUID examinerId, LocalDateTime startTime) {
         User patient = userRepo.findById(patientId).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
-        if (appointementRepo.countByPatientIdAndStatus(patientId, AppointementStatus.ACTIVE) == 5) {
+        if (appointementRepo.countByPatientIdAndStatusAndStartAfter(patientId, AppointementStatus.ACTIVE,LocalDateTime.now()) == 5) {
             throw new AppointementExceededException("Patient already has 5 active appointement ");
         }
 
@@ -69,6 +66,13 @@ public class AppointementServiceImpl implements AppointementService {
             throw new AppointementTimingException(
                     "Invalid start time. Appointement must be scheduled in thr recomanded time slot of the section wanted.");
         }
+        if (appointementRepo.existsByPatientIdAndStartAndStatus(
+                patientId,
+                startTime,
+                AppointementStatus.ACTIVE)) {
+            throw new RuntimeException("appoinetement already booked for you at this time");
+        }
+
 
         User examiner = shiftService.getExaminerIfAvailable(sectionId, examinerId, startTime,
                 startTime.plusMinutes(CONSULTATION_DURATION));
@@ -82,6 +86,7 @@ public class AppointementServiceImpl implements AppointementService {
         Appointement appointement = new Appointement();
         appointement.setPatient(patient);
         appointement.setExaminer(examiner);
+        appointement.setType(appointementTypeEnum.CONSULTATION);
         appointement.setStart(startTime);
         appointement.setStatus(AppointementStatus.ACTIVE);
         appointementRepo.save(appointement);
@@ -92,7 +97,7 @@ public class AppointementServiceImpl implements AppointementService {
     public void createAppointementForTest(UUID patientId, UUID sectionId, LocalDateTime startTime) {
         User patient = userRepo.findById(patientId).orElseThrow(
                 () -> new UserNotFoundException("Patient not found"));
-        if (appointementRepo.countByPatientIdAndStatus(patientId, AppointementStatus.ACTIVE) == 5) {
+        if (appointementRepo.countByPatientIdAndStatusAndStartAfter(patientId, AppointementStatus.ACTIVE,LocalDateTime.now()) == 5) {
             throw new AppointementExceededException("Patient already has 5 active appointement ");
         }
 
@@ -126,6 +131,7 @@ public class AppointementServiceImpl implements AppointementService {
                 Appointement appointement = new Appointement();
                 appointement.setPatient(patient);
                 appointement.setExaminer(examiner);
+                appointement.setType(appointementTypeEnum.TEST);
                 appointement.setStart(startTime);
                 appointement.setStatus(AppointementStatus.ACTIVE);
                 appointementRepo.save(appointement);
@@ -151,17 +157,31 @@ public class AppointementServiceImpl implements AppointementService {
     @Override
     public Map<UUID, List<TimeSlotResponseDto>> getAvailableTimeSlotsForSection(UUID sectionId) {
         List<Shift> shifts = shiftService.getAllShiftsForSection(sectionId);
+
         Map<UUID, List<Shift>> shiftsByExaminer = new HashMap<>();
+
         for (Shift shift : shifts) {
             UUID examinerId = shift.getExaminer().getId();
-            shiftsByExaminer.computeIfAbsent(examinerId, k -> new ArrayList<>()).add(shift);
+            shiftsByExaminer
+                    .computeIfAbsent(examinerId, k -> new ArrayList<>())
+                    .add(shift);
         }
+
         Map<UUID, List<TimeSlotResponseDto>> availableTimeSlotsByExaminer = new HashMap<>();
-        for (Map.Entry<UUID, List<Shift>> shift : shiftsByExaminer.entrySet()) {
-            List<TimeSlotResponseDto> availableTimeSlots = getAvailableTimeSlotsForExaminer(shift.getValue(),
-                    CONSULTATION_DURATION);
-            availableTimeSlotsByExaminer.put(shift.getKey(), availableTimeSlots);
+
+        for (Map.Entry<UUID, List<Shift>> entry : shiftsByExaminer.entrySet()) {
+
+            List<TimeSlotResponseDto> availableTimeSlots =
+                    getAvailableTimeSlotsForExaminer(
+                            entry.getValue(),
+                            CONSULTATION_DURATION
+                    ).stream()
+                            .filter(slot -> slot.getStart().isAfter(LocalDateTime.now()))
+                            .toList();
+
+            availableTimeSlotsByExaminer.put(entry.getKey(), availableTimeSlots);
         }
+
         return availableTimeSlotsByExaminer;
     }
 
@@ -180,15 +200,18 @@ public class AppointementServiceImpl implements AppointementService {
             List<TimeSlotResponseDto> availableTimeSlots = getAvailableTimeSlotsForExaminer(shift.getValue(), duration);
             availableTimeSlotsByExaminer.put(shift.getKey(), availableTimeSlots);
         }
-        List<TimeSlotResponseDto> availableTimeSlotsForTest = availableTimeSlotsByExaminer.values()
-                .stream().flatMap(List::stream)
-                .toList();
+        List<TimeSlotResponseDto> availableTimeSlotsForTest =
+                availableTimeSlotsByExaminer.values()
+                        .stream()
+                        .flatMap(List::stream)
+                        .filter(slot -> slot.getStart().isAfter(LocalDateTime.now()))
+                        .toList();
         return availableTimeSlotsForTest;
     }
 
     @Override
     public List<TimeSlotResponseDto> getAvailableTimeSlotsForExaminerInSection(UUID sectionId, UUID examinerId) {
-        List<Shift> shifts = shiftService.getShiftsForsectionAndExaminer(sectionId, examinerId, ShiftStatus.ACTIVE);
+        List<Shift> shifts = shiftService.getShiftsForsectionAndExaminer(sectionId, examinerId, ShiftStatus.ACTIVE,ShiftStatus.COMPLETED);
         List<TimeSlotResponseDto> availableTimeSlots = getAvailableTimeSlotsForExaminer(shifts, CONSULTATION_DURATION);
         return availableTimeSlots;
     }
@@ -196,9 +219,10 @@ public class AppointementServiceImpl implements AppointementService {
     @Override
     public Page<Appointement> getUpcomingAppointementsForPatient(UUID patientId, Pageable pageable) {
 
-        return appointementRepo.findByPatientIdAndStatus(
+        return appointementRepo.findByPatientIdAndStatusAndStartAfter(
                 patientId,
                 AppointementStatus.ACTIVE,
+                LocalDateTime.now(),
                 pageable);
     }
 

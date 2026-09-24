@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,24 +23,24 @@ import java.util.UUID;
 public interface ShiftRepo extends JpaRepository<Shift, UUID> {
     boolean existsByExaminerIdAndSectionIdAndStatusAndStartAndEnd(UUID examinerId, UUID sectionId, ShiftStatus status, LocalDateTime start, LocalDateTime end);
 
-    Page<Shift> findByExaminerIdAndStatus(UUID examinerId,ShiftStatus status,Pageable pageable);
+    Page<Shift> findByExaminerId(UUID examinerId,Pageable pageable);
 
-    Page<Shift> findBySectionIdAndStatus(UUID sectionId, ShiftStatus shiftStatus, Pageable pageable);
-    List<Shift> findBySectionIdAndStatus(UUID sectionId, ShiftStatus shiftStatus);
+    Page<Shift> findBySectionId(UUID sectionId, Pageable pageable);
+    List<Shift> findBySectionIdAndStatusIn(UUID sectionId,Collection<ShiftStatus> statuses);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Shift> findBySectionIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+    List<Shift> findBySectionIdAndStatusInAndStartLessThanEqualAndEndGreaterThanEqual(
             UUID sectionId,
-            ShiftStatus status,
+            Collection<ShiftStatus> statuses,
             LocalDateTime providedEndDate,
             LocalDateTime providedStartDate
     );
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Shift> findBySectionIdAndExaminerIdAndStatusAndStartLessThanEqualAndEndGreaterThanEqual(
+    Optional<Shift> findBySectionIdAndExaminerIdAndStatusInAndStartLessThanEqualAndEndGreaterThanEqual(
             UUID sectionId,
             UUID examinerId,
-            ShiftStatus status,
+            Collection<ShiftStatus> statuses,
             LocalDateTime providedEndDate,
             LocalDateTime providedStartDate
     );
@@ -50,16 +51,17 @@ public interface ShiftRepo extends JpaRepository<Shift, UUID> {
 
     boolean existsByExaminerIdAndStatusAndStartLessThanAndEndGreaterThan(UUID examinerId, ShiftStatus shiftStatus,  LocalDateTime startTime,  LocalDateTime endTime);
 
-    List<Shift> findBySectionIdAndExaminerIdAndStatus(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus);
+    List<Shift> findBySectionIdAndExaminerIdAndStatusIn(UUID sectionId, UUID examinerId,Collection<ShiftStatus> statuses);
 
     int countBySectionIdAndStatusAndStartLessThanAndEndGreaterThan(UUID examinerId, ShiftStatus shiftStatus, @NotNull LocalDateTime endTime, @NotNull LocalDateTime startTime);
 
-    Page<Shift> findByExaminerIdAndStatusAndStartAfter(
-        UUID examinerId,
-        ShiftStatus status,
-        LocalDateTime now,
-        Pageable pageable
-);
+    Page<Shift> findByExaminerIdAndStatusInAndEndAfter(
+            UUID examinerId,
+            Collection<ShiftStatus> statuses,
+            LocalDateTime end,
+            Pageable pageable
+    );
+
 
 Optional<Shift> findFirstByExaminerIdAndStatusAndStartAfterOrderByStartAsc(
         UUID examinerId,
@@ -79,4 +81,11 @@ Optional<Shift> findShiftForAppointmentValidation(
         @Param("statuses") List<ShiftStatus> statuses,
         @Param("appointmentStart") LocalDateTime appointmentStart
 );
+
+    List<Shift> findByStatusAndStartLessThan(ShiftStatus shiftStatus, LocalDateTime now);
+
+    int countByStatusAndStartLessThan(ShiftStatus shiftStatus, LocalDateTime now);
+
+
+    List<Shift> findBySectionIdAndStatusAndEndAfter(UUID sectionId, ShiftStatus shiftStatus, LocalDateTime now);
 }

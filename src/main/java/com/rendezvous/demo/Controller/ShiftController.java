@@ -1,7 +1,8 @@
 package com.rendezvous.demo.Controller;
 
 import com.rendezvous.demo.Mapper.ShiftMapper;
-import com.rendezvous.demo.service.ShiftService;
+import com.rendezvous.demo.Service.ShiftService;
+import com.rendezvous.demo.Service.ShiftService;
 import com.rendezvous.demo.domain.Dtos.CreateshiftRequestDto;
 import com.rendezvous.demo.domain.Dtos.GetShiftsDetailsResponseDto;
 import com.rendezvous.demo.domain.Dtos.GetShiftsForExaminerResponseDto;
@@ -70,17 +71,24 @@ public class ShiftController {
                                 shiftMapper.toGetShiftsDetailsResponseDto(shift));
         }
 
-        @PostMapping("cancel/{shiftId}")
+        @PutMapping("cancel/{shiftId}")
         public ResponseEntity<Void> cancelShift(
                         @PathVariable UUID shiftId) {
                 shiftService.cancelShift(shiftId);
+                System.out.println("ddddddd");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        @PostMapping("complete/{shiftId}")
+        @PutMapping("complete/{shiftId}")
         public ResponseEntity<Void> completeShift(
                         @PathVariable UUID shiftId) {
                 shiftService.completeShift(shiftId);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        @PutMapping("non_attended/{shiftId}")
+        public ResponseEntity<Void> markShift(
+                @PathVariable UUID shiftId) {
+                shiftService.markShift(shiftId);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 

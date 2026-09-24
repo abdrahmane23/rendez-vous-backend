@@ -14,7 +14,7 @@ public class KeycloakAdminConfig {
                 .realm("Rendez-vous")
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .clientId("backend-cllient")
-                .clientSecret("dWd0Ik5JRpAtKvU4V4Jt3VpQZeswZwEf")
+                .clientSecret("DTpNgu6mFSra3kKgrnoUfx2ZuIsrhuvo")
                 .build();
     }
 }

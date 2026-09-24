@@ -17,12 +17,9 @@ public interface AppointementRepo extends JpaRepository<Appointement, UUID> {
 
 
     boolean existsByExaminerAndStart(User examiner, LocalDateTime startTime);
-    int countByPatientIdAndStatus(UUID patientId, AppointementStatus status);
+    int countByPatientIdAndStatusAndStartAfter(UUID patientId, AppointementStatus status, LocalDateTime startTime);
 
     List<Appointement> findByExaminerIdAndStatusAndStartBetween(UUID examinerId, AppointementStatus appointementStatus, LocalDateTime start, LocalDateTime lastStart);
-
-    Page<Appointement> findByPatientIdAndStatus(UUID patientId, AppointementStatus appointementStatus, Pageable pageable);
-
 
     boolean existsByPatientIdAndStartAndStatus(UUID patientId, LocalDateTime startTime, AppointementStatus appointementStatus);
 
@@ -33,9 +30,13 @@ public interface AppointementRepo extends JpaRepository<Appointement, UUID> {
           and a.start < :shiftEnd
         order by a.start asc
         """)
-List<Appointement> findAppointementsInShiftSorted(
-        @Param("examinerId") UUID examinerId,
-        @Param("shiftStart") LocalDateTime shiftStart,
-        @Param("shiftEnd") LocalDateTime shiftEnd
-);
+    List<Appointement> findAppointementsInShiftSorted(
+            @Param("examinerId") UUID examinerId,
+            @Param("shiftStart") LocalDateTime shiftStart,
+            @Param("shiftEnd") LocalDateTime shiftEnd
+    );
+
+    Page<Appointement> findByPatientIdAndStatusAndStartAfter(UUID patientId, AppointementStatus appointementStatus, LocalDateTime now, Pageable pageable);
+
+    List<Appointement> findByStatusAndStartLessThan(AppointementStatus appointementStatus, LocalDateTime now);
 }

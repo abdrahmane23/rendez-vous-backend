@@ -10,5 +10,6 @@ public class GetExaminerResponseDto {
     private String firstName;
     private String name;
     private String field;
+    private String role;
 
 }

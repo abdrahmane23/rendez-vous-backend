@@ -1,4 +1,4 @@
-package com.rendezvous.demo.service;
+package com.rendezvous.demo.Service;
 
 import com.rendezvous.demo.domain.Dtos.CreateshiftRequestDto;
 import com.rendezvous.demo.domain.Entities.Shift;
@@ -25,7 +25,7 @@ public interface ShiftService {
     Shift getShiftById(UUID shiftId);
     List<User> getAvailableExaminers(UUID sectionId, LocalDateTime startTime, LocalDateTime endTime);
     User getExaminerIfAvailable(UUID sectionId,UUID examinerId, LocalDateTime startTime, LocalDateTime endTime);
-    List <Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus);
+    List <Shift> getShiftsForsectionAndExaminer(UUID sectionId, UUID examinerId, ShiftStatus shiftStatus,ShiftStatus shiftStatus1);
     void cancelShift(UUID shiftId);
     void completeShift(UUID shiftId);
 
@@ -33,5 +33,5 @@ public interface ShiftService {
     Shift getNextUpcomingShiftForExaminer(UUID examinerId);
 
 
-
+    void markShift(UUID shiftId);
 }

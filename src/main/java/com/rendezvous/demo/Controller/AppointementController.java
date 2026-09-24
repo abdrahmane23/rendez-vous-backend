@@ -2,7 +2,7 @@ package com.rendezvous.demo.Controller;
 
 import com.rendezvous.demo.Mapper.AppointementMapper;
 import com.rendezvous.demo.Mapper.UserMapper;
-import com.rendezvous.demo.service.AppointementService;
+import com.rendezvous.demo.Service.AppointementService;
 import com.rendezvous.demo.Util;
 import com.rendezvous.demo.domain.Dtos.GetAppointementResponseDto;
 import com.rendezvous.demo.domain.Dtos.TimeSlotResponseDto;
@@ -29,6 +29,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/appointements")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class AppointementController {
         private final AppointementService appointementService;
@@ -78,6 +79,8 @@ public class AppointementController {
                         @PathVariable UUID examinerId) {
                 List<TimeSlotResponseDto> availableTimeSlots = appointementService
                                 .getAvailableTimeSlotsForExaminerInSection(sectionId, examinerId);
+                System.out.println("Received request for available time slots for examiner " + examinerId + " in section " + sectionId);
+
                 return ResponseEntity.ok(availableTimeSlots);
         }
 

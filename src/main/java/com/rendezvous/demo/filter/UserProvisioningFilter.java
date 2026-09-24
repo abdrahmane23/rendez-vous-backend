@@ -2,6 +2,7 @@ package com.rendezvous.demo.filter;
 
 
 import com.rendezvous.demo.Repositories.UserRepo;
+import com.rendezvous.demo.Util;
 import com.rendezvous.demo.domain.Entities.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,6 +42,7 @@ public class UserProvisioningFilter extends OncePerRequestFilter {
                 newUser.setFirstName(jwt.getClaimAsString("firstName"));
                 newUser.setAddress(jwt.getClaimAsString("Adresse"));
                 newUser.setNumber(jwt.getClaimAsString("PhoneNumber"));
+                newUser.setRole(Util.extractRole(jwt));
                 String field = jwt.getClaimAsString("field");
                 if (field != null) {
                     newUser.setField(field);

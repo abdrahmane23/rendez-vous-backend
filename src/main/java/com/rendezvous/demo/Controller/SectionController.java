@@ -3,7 +3,7 @@ package com.rendezvous.demo.Controller;
 import java.util.UUID;
 
 import com.rendezvous.demo.Mapper.SectionMapper;
-import com.rendezvous.demo.service.SectionService;
+import com.rendezvous.demo.Service.SectionService;
 import com.rendezvous.demo.domain.Dtos.CreateSectionRequestDto;
 import com.rendezvous.demo.domain.Dtos.GetSectionDetailsResponseDto;
 import com.rendezvous.demo.domain.Dtos.GetSectionResponseDto;
@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 
 import com.rendezvous.demo.domain.Entities.Section;
-import com.rendezvous.demo.service.Impl.SectionServiceImpl;
+import com.rendezvous.demo.Service.Impl.SectionServiceImpl;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/sections")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class SectionController {
 
@@ -30,8 +31,9 @@ public class SectionController {
     @GetMapping
     public ResponseEntity<Page<GetSectionResponseDto>> getAllSections(Pageable pageable) {
          Page <Section> sections=  sectionService.getAllSections(pageable);
-        return ResponseEntity.ok(
-                sections.map(sectionMapper::toDto));
+         Page<GetSectionResponseDto> sec =sections.map(sectionMapper::toDto);
+        return ResponseEntity.ok(sec
+                );
     }
 
     @GetMapping("/{id}")
@@ -39,6 +41,7 @@ public class SectionController {
         Section section = sectionService.getSectionById(id);
         return sectionMapper.toGetSectionDetailsResponseDto(section);
     }
+
     @PostMapping
     public ResponseEntity<Void> createSection(@RequestBody CreateSectionRequestDto section) {
         sectionService.createSection(section);

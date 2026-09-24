@@ -12,6 +12,7 @@ import com.rendezvous.demo.domain.Enums.ConsultationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
@@ -38,5 +39,22 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setStatus(ConsultationStatus.CANCELED);
 
 
+    }
+
+    @Override
+    public List<Consultation> getConsultationForPatient(UUID patientId) {
+        return consultationRepo.findByAppointementPatientId(patientId);
+    }
+
+    @Override
+    public Consultation getConsultationById(UUID consultationId) {
+        return consultationRepo.findById(consultationId).orElseThrow(
+                ()-> new RuntimeException("Consultation not found")
+        );
+    }
+
+    @Override
+    public List<Consultation> getConsultationsForExaminer(UUID patientId) {
+        return consultationRepo.findByAppointementPatientId(patientId);
     }
 }
